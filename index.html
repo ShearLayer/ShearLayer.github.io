@@ -7,19 +7,47 @@
     <style>
         body {
             display: flex;
+            min-height: 100vh; /* Ensures the body takes at least the full viewport height */
+            margin: 0;
+            background: linear-gradient(135deg, #a1c4fd 0%, #f7e4a3 100%); /* Gradient background */
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 200px; /* Fixed width for the sidebar */
+            background-color: #333; /* Dark background for the sidebar */
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100vh; /* Full height of the viewport */
+            position: fixed; /* Keeps the sidebar fixed while scrolling */
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar li {
+            padding: 15px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s; /* Smooth hover effect */
+        }
+        .sidebar li:hover {
+            background-color: #555; /* Lighter shade on hover */
+        }
+        .main-content {
+            margin-left: 220px; /* Offset to account for sidebar width + padding */
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Ensures the body takes at least the full viewport height */
-            margin: 0;
-            padding: 20px; /* Adds padding to prevent content from touching the edges */
-            background: linear-gradient(135deg, #a1c4fd 0%, #f7e4a3 100%); /* Gradient background */
-            box-sizing: border-box; /* Ensures padding doesn't add to the total width */
+            flex-grow: 1; /* Takes up remaining space */
+            padding: 20px;
+            box-sizing: border-box;
         }
         h1 {
             font-family: Arial, sans-serif;
             color: #333;
-            margin-bottom: 30px; /* Increased spacing between title and image */
+            margin-bottom: 30px;
             text-align: center;
         }
         img {
@@ -27,12 +55,23 @@
             height: auto;
             border: 2px solid #333;
             border-radius: 10px;
-            margin-top: 20px; /* Adds space above the image */
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>OK Boomer</h1>
-    <img src="unnamed.png" alt="Cartoon depicting generational debt">
+    <div class="sidebar">
+        <ul>
+            <li>File</li>
+            <li>Storage</li>
+            <li>Run</li>
+            <li>Hold</li>
+            <li>Report</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h1>OK Boomer</h1>
+        <img src="unnamed.png" alt="Cartoon depicting generational debt">
+    </div>
 </body>
 </html>
