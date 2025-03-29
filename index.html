@@ -55,10 +55,15 @@
             margin-bottom: 30px;
             text-align: center;
         }
+        .image-wrapper {
+            display: flex;
+            align-items: center; /* Vertically center the button and image */
+            gap: 20px; /* Space between the button and image */
+            margin-top: 20px;
+        }
         .image-container {
             position: relative; /* Allows positioning of the overlay */
             max-width: 80%; /* Matches the image's max-width */
-            margin-top: 20px;
         }
         .image-container img {
             max-width: 100%; /* Ensures the image doesn't overflow its container */
@@ -67,7 +72,7 @@
             border-radius: 10px;
             display: block; /* Removes any extra space below the image */
         }
-        .image-container::before {
+        .image-container.overlay::before {
             content: ''; /* Required for the pseudo-element */
             position: absolute;
             top: 0;
@@ -76,6 +81,19 @@
             height: 100%;
             background-color: rgba(50, 50, 50, 0.5); /* Dark grey with 50% opacity */
             border-radius: 10px; /* Matches the image's border-radius */
+        }
+        .toggle-button {
+            padding: 10px 20px;
+            background-color: #333; /* Matches the sidebar/footer color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s; /* Smooth hover effect */
+        }
+        .toggle-button:hover {
+            background-color: #555; /* Lighter shade on hover */
         }
         footer {
             background-color: #333; /* Matches the sidebar color */
@@ -109,8 +127,11 @@
         </div>
         <div class="main-content">
             <h1>OK Boomer</h1>
-            <div class="image-container">
-                <img src="unnamed.png" alt="Cartoon depicting generational debt">
+            <div class="image-wrapper">
+                <button class="toggle-button" onclick="toggleOverlay()">Toggle</button>
+                <div class="image-container overlay" id="imageContainer">
+                    <img src="unnamed.png" alt="Cartoon depicting generational debt">
+                </div>
             </div>
         </div>
     </div>
@@ -121,5 +142,12 @@
         <a href="https://www.instagram.com/?url=https://example.com" target="_blank">Instagram</a>
         <a href="https://signal.me/#p/+12025550123?text=Check%20out%20this%20cartoon:%20https://example.com" target="_blank">Signal</a>
     </footer>
+
+    <script>
+        function toggleOverlay() {
+            const imageContainer = document.getElementById('imageContainer');
+            imageContainer.classList.toggle('overlay');
+        }
+    </script>
 </body>
 </html>
