@@ -18,7 +18,7 @@
             flex: 1; /* Allows the container to grow and push the footer to the bottom */
         }
         .sidebar {
-            width: 200px; /* Fixed width for the sidebar */
+            width: 200px; /* Fixed width for the sidebar on desktop */
             background-color: #333; /* Dark background for the sidebar */
             color: white;
             padding: 20px;
@@ -54,6 +54,7 @@
             color: #333;
             margin-bottom: 30px;
             text-align: center;
+            font-size: 2.5rem; /* Larger font size for desktop */
         }
         .image-wrapper {
             display: flex;
@@ -63,7 +64,7 @@
         }
         .image-container {
             position: relative; /* Allows positioning of the overlay */
-            max-width: 80%; /* Matches the image's max-width */
+            max-width: 80%; /* Matches the image's max-width on desktop */
         }
         .image-container img {
             max-width: 100%; /* Ensures the image doesn't overflow its container */
@@ -103,6 +104,9 @@
             width: 100%;
             position: relative; /* Ensures the footer stays at the bottom */
         }
+        footer p {
+            margin: 5px 0;
+        }
         footer a {
             color: #a1c4fd; /* Matches the gradient's light blue for contrast */
             text-decoration: none;
@@ -111,6 +115,66 @@
         }
         footer a:hover {
             text-decoration: underline; /* Underline on hover for better UX */
+        }
+
+        /* Media Query for Mobile Devices (screens smaller than 768px) */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column; /* Stack sidebar and main content vertically */
+            }
+            .sidebar {
+                width: 100%; /* Full width on mobile */
+                height: auto; /* Auto height instead of full viewport */
+                position: static; /* Remove fixed positioning */
+                padding: 10px; /* Reduce padding */
+            }
+            .sidebar li {
+                padding: 10px 5px; /* Reduce padding for list items */
+                font-size: 14px; /* Smaller font size for mobile */
+            }
+            .main-content {
+                margin-left: 0; /* Remove sidebar offset */
+                padding: 10px; /* Reduce padding */
+            }
+            h1 {
+                font-size: 1.5rem; /* Smaller font size for mobile */
+                margin-bottom: 20px;
+            }
+            .image-wrapper {
+                flex-direction: column; /* Stack button and image vertically */
+                gap: 10px; /* Reduce gap */
+                align-items: center;
+            }
+            .image-container {
+                max-width: 100%; /* Allow image to take full width on mobile */
+            }
+            .toggle-button {
+                padding: 8px 16px; /* Slightly smaller button */
+                font-size: 14px; /* Smaller font size */
+            }
+            footer {
+                padding: 8px 0; /* Reduce padding */
+            }
+            footer a {
+                margin: 0 10px; /* Reduce spacing between links */
+                font-size: 14px; /* Smaller font size for mobile */
+            }
+        }
+
+        /* Media Query for Very Small Screens (e.g., phones smaller than 480px) */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem; /* Even smaller font size for very small screens */
+            }
+            .toggle-button {
+                padding: 6px 12px; /* Even smaller button */
+                font-size: 12px;
+            }
+            footer a {
+                display: inline-block; /* Stack links vertically if needed */
+                margin: 5px 0; /* Adjust spacing for vertical stacking */
+                font-size: 12px;
+            }
         }
     </style>
 </head>
