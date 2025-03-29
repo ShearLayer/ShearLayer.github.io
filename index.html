@@ -10,20 +10,24 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* Ensures the body takes at least the full viewport height */
             margin: 0;
+            padding: 20px; /* Adds padding to prevent content from touching the edges */
             background-color: #f0f0f0;
+            box-sizing: border-box; /* Ensures padding doesn't add to the total width */
         }
         h1 {
             font-family: Arial, sans-serif;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 30px; /* Increased spacing between title and image */
+            text-align: center;
         }
         img {
-            max-width: 80%;
+            max-width: 80%; /* Ensures the image doesn't overflow */
             height: auto;
             border: 2px solid #333;
             border-radius: 10px;
+            margin-top: 20px; /* Adds space above the image */
         }
     </style>
 </head>
