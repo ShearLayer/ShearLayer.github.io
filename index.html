@@ -56,6 +56,13 @@
             text-align: center;
             font-size: 2.5rem; /* Larger font size for desktop */
         }
+        .image-section {
+            position: relative; /* Allows positioning of the section overlay */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px; /* Space between the section toggle button and image wrapper */
+        }
         .image-wrapper {
             display: flex;
             align-items: center; /* Vertically center the button and image */
@@ -63,7 +70,7 @@
             margin-top: 20px;
         }
         .image-container {
-            position: relative; /* Allows positioning of the overlay */
+            position: relative; /* Allows positioning of the image overlay */
             max-width: 80%; /* Matches the image's max-width on desktop */
         }
         .image-container img {
@@ -83,7 +90,16 @@
             background-color: rgba(50, 50, 50, 0.5); /* Dark grey with 50% opacity */
             border-radius: 10px; /* Matches the image's border-radius */
         }
-        .toggle-button {
+        .image.ConcurrentOverlay::before {
+            content: ''; /* Required for the pseudo-element */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(50, 50, 50, 0.5); /* Dark grey with 50% opacity */
+        }
+        .toggle-button, .section-toggle-button {
             padding: 10px 20px;
             background-color: #333; /* Matches the sidebar/footer color */
             color: white;
@@ -93,8 +109,13 @@
             font-size: 16px;
             transition: background-color 0.3s; /* Smooth hover effect */
         }
-        .toggle-button:hover {
+        .toggle-button:hover, .section-toggle-button:hover {
             background-color: #555; /* Lighter shade on hover */
+        }
+        .toggle-button:disabled {
+            background-color: #666; /* Greyed out when disabled */
+            cursor: not-allowed; /* Indicates the button is not clickable */
+            opacity: 0.6; /* Visually indicate disabled state */
         }
         footer {
             background-color: #333; /* Matches the sidebar color */
@@ -148,7 +169,7 @@
             .image-container {
                 max-width: 100%; /* Allow image to take full width on mobile */
             }
-            .toggle-button {
+            .toggle-button, .section-toggle-button {
                 padding: 8px 16px; /* Slightly smaller button */
                 font-size: 14px; /* Smaller font size */
             }
@@ -166,7 +187,7 @@
             h1 {
                 font-size: 1.2rem; /* Even smaller font size for very small screens */
             }
-            .toggle-button {
+            .toggle-button, .section-toggle-button {
                 padding: 6px 12px; /* Even smaller button */
                 font-size: 12px;
             }
@@ -191,10 +212,13 @@
         </div>
         <div class="main-content">
             <h1>OK Boomer</h1>
-            <div class="image-wrapper">
-                <button class="toggle-button" onclick="toggleOverlay()">Toggle</button>
-                <div class="image-container overlay" id="imageContainer">
-                    <img src="unnamed.png" alt="Cartoon depicting generational debt">
+            <div class="image-section" id="imageSection">
+                <button class="section-toggle-button" onclick="toggleSectionOverlay()">Toggle Section Overlay</button>
+                <div class="image-wrapper">
+                    <button class="toggle-button" id="imageToggleButton" onclick="toggleOverlay()">Toggle</button>
+                    <div class="image-container overlay" id="imageContainer">
+                        <img src="unnamed.png" alt="Cartoon depicting generational debt">
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,6 +235,19 @@
         function toggleOverlay() {
             const imageContainer = document.getElementById('imageContainer');
             imageContainer.classList.toggle('overlay');
+        }
+
+        function toggleSectionOverlay() {
+            const imageSection = document.getElementById('imageSection');
+            const imageToggleButton = document.getElementById('imageToggleButton');
+            imageSection.classList.toggle('section-overlay');
+
+            // Disable/enable the image toggle button based on the section overlay
+            if (imageSection.classList.contains('section-overlay')) {
+                imageToggleButton.disabled = true;
+            } else {
+                imageToggleButton.disabled = false;
+            }
         }
     </script>
 </body>
