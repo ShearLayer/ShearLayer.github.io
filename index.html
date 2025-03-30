@@ -2,78 +2,190 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blocky Flight Simulator</title>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@latest/build/three.module.js"
-            }
-        }
-    </script>
+    <title>3D Flyer Simulation with Pitch, Roll, and Terrain</title>
     <style>
         body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
-    <script type="module">
-        import * as THREE from "three";
-
-        // Scene, Camera, Renderer
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script>
+        // Scene setup
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Create Blocky Airplane
-        const plane = new THREE.Group();
+        // Flyer (simple plane)
+        const flyerGeometry = new THREE.BoxGeometry(1, 0.2, 2);
+        const flyerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const flyer = new THREE.Mesh(flyerGeometry, flyerMaterial);
+        flyer.position.set(0, 20, 0);
+        scene.add(flyer);
 
-        // Main Body
-        const bodyGeo = new THREE.BoxGeometry(2, 1, 4);
-        const bodyMat = new THREE.MeshBasicMaterial({ color: "red", wireframe: false });
-        const body = new THREE.Mesh(bodyGeo, bodyMat);
-        plane.add(body);
+        // Perlin Noise function (simple 2D implementation)
+        function perlinNoise(x, z) {
+            const simplex = new SimplexNoise();
+            return simplex.noise2D(x * 0.01, z * 0.01) * 20; // Scale height by 20
+        }
 
-        // Wings
-        const wingGeo = new THREE.BoxGeometry(6, 0.2, 1);
-        const wingMat = new THREE.MeshBasicMaterial({ color: "gray" });
-        const wing = new THREE.Mesh(wingGeo, wingMat);
-        wing.position.y = 0.6;
-        plane.add(wing);
+        // Terrain with Perlin Noise
+        const terrainSize = 1000;
+        const terrainSegments = 100;
+        const terrainGeometry = new THREE.PlaneGeometry(terrainSize, terrainSize, terrainSegments, terrainSegments);
+        const terrainMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+        const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+        terrain.rotation.x = Math.PI / 2;
+        terrain.position.y = -50;
 
-        scene.add(plane);
+        // Apply Perlin Noise to terrain vertices
+        const vertices = terrainGeometry.attributes.position.array;
+        for (let i = 0; i < vertices.length; i += 3) {
+            const x = vertices[i];
+            const z = vertices[i + 1];
+            vertices[i + 2] = perlinNoise(x, z); // Set height
+        }
+        terrainGeometry.attributes.position.needsUpdate = true;
+        terrainGeometry.computeVertexNormals();
+        scene.add(terrain);
 
-        // Camera Position
-        camera.position.z = 10;
-        camera.position.y = 2;
-        camera.lookAt(plane.position);
+        // Sky (simple skybox)
+        const skyGeometry = new THREE.SphereGeometry(500, 32, 32);
+        const skyMaterial = new THREE.MeshBasicMaterial({ color: 0x87ceeb, side: THREE.BackSide });
+        const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+        scene.add(sky);
 
-        // Controls
-        let roll = 0;  // Rotation around Z-axis
-        let pitch = 0; // Rotation around X-axis
+        // Clouds (randomly placed spheres)
+        const cloudMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        for (let i = 0; i < 20; i++) {
+            const cloudGeometry = new THREE.SphereGeometry(5, 16, 16);
+            const cloud = new THREE.Mesh(cloudGeometry, cloudMaterial);
+            cloud.position.set(
+                Math.random() * 400 - 200,
+                Math.random() * 50 + 20,
+                Math.random() * 400 - 200
+            );
+            scene.add(cloud);
+        }
 
-        window.addEventListener("keydown", (event) => {
-            if (event.key === "ArrowUp") pitch -= 0.05; // Nose Down
-            if (event.key === "ArrowDown") pitch += 0.05; // Nose Up
-            if (event.key === "ArrowLeft") roll -= 0.05; // Roll Left
-            if (event.key === "ArrowRight") roll += 0.05; // Roll Right
+        // Camera setup
+        camera.position.set(0, 30, 40);
+        camera.lookAt(flyer.position);
+
+        // Controls with quaternions
+        const controls = {
+            moveForward: false,
+            moveBackward: false,
+            pitchUp: false,
+            pitchDown: false,
+            rollLeft: false,
+            rollRight: false,
+            speed: 0.5,
+            rotationSpeed: 0.02
+        };
+
+        document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'ArrowUp': controls.pitchUp = true; break;
+                case 'ArrowDown': controls.pitchDown = true; break;
+                case 'ArrowLeft': controls.rollLeft = true; break;
+                case 'ArrowRight': controls.rollRight = true; break;
+                case 'w': controls.moveForward = true; break;
+                case 's': controls.moveBackward = true; break;
+            }
         });
 
+        document.addEventListener('keyup', (event) => {
+            switch (event.key) {
+                case 'ArrowUp': controls.pitchUp = false; break;
+                case 'ArrowDown': controls.pitchDown = false; break;
+                case 'ArrowLeft': controls.rollLeft = false; break;
+                case 'ArrowRight': controls.rollRight = false; break;
+                case 'w': controls.moveForward = false; break;
+                case 's': controls.moveBackward = false; break;
+            }
+        });
+
+        // Animation loop
+        const flyerDirection = new THREE.Vector3(0, 0, -1); // Forward direction
         function animate() {
             requestAnimationFrame(animate);
 
-            // Apply rotation
-            plane.rotation.x = pitch;
-            plane.rotation.z = roll;
+            // Apply pitch (X-axis rotation)
+            if (controls.pitchUp) flyer.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -controls.rotationSpeed));
+            if (controls.pitchDown) flyer.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), controls.rotationSpeed));
 
-            // Move forward (simulate flight)
-            plane.position.z -= 0.1;
+            // Apply roll (Z-axis rotation)
+            if (controls.rollLeft) flyer.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), controls.rotationSpeed));
+            if (controls.rollRight) flyer.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -controls.rotationSpeed));
+
+            // Move flyer in its forward direction
+            const forward = flyerDirection.clone().applyQuaternion(flyer.quaternion).normalize();
+            if (controls.moveForward) flyer.position.add(forward.multiplyScalar(controls.speed));
+            if (controls.moveBackward) flyer.position.sub(forward.multiplyScalar(controls.speed));
+
+            // Update camera to follow flyer
+            const cameraOffset = new THREE.Vector3(0, 20, 30).applyQuaternion(flyer.quaternion);
+            camera.position.copy(flyer.position).add(cameraOffset);
+            camera.lookAt(flyer.position);
 
             renderer.render(scene, camera);
         }
 
+        // Simple SimplexNoise implementation (since we can't load external libs easily here)
+        function SimplexNoise() {
+            const p = new Uint8Array(256);
+            for (let i = 0; i < 256; i++) p[i] = i;
+            for (let i = 255; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [p[i], p[j]] = [p[j], p[i]];
+            }
+            this.perm = new Uint8Array(512);
+            for (let i = 0; i < 512; i++) this.perm[i] = p[i & 255];
+        }
+        SimplexNoise.prototype.noise2D = function(xin, yin) {
+            const perm = this.perm;
+            const F2 = 0.5 * (Math.sqrt(3) - 1);
+            const G2 = (3 - Math.sqrt(3)) / 6;
+            let n0, n1, n2;
+            const s = (xin + yin) * F2;
+            const i = Math.floor(xin + s);
+            const j = Math.floor(yin + s);
+            const t = (i + j) * G2;
+            const X0 = i - t;
+            const Y0 = j - t;
+            const x0 = xin - X0;
+            const y0 = yin - Y0;
+            let i1, j1;
+            if (x0 > y0) { i1 = 1; j1 = 0; } else { i1 = 0; j1 = 1; }
+            const x1 = x0 - i1 + G2;
+            const y1 = y0 - j1 + G2;
+            const x2 = x0 - 1 + 2 * G2;
+            const y2 = y0 - 1 + 2 * G2;
+            const ii = i & 255;
+            const jj = j & 255;
+            const gi0 = perm[ii + perm[jj]] % 12;
+            const gi1 = perm[ii + i1 + perm[jj + j1]] % 12;
+            const gi2 = perm[ii + 1 + perm[jj + 1]] % 12;
+            n0 = 0.5 - x0 * x0 - y0 * y0;
+            if (n0 < 0) n0 = 0; else n0 *= n0;
+            n1 = 0.5 - x1 * x1 - y1 * y1;
+            if (n1 < 0) n1 = 0; else n1 *= n1;
+            n2 = 0.5 - x2 * x2 - y2 * y2;
+            if (n2 < 0) n2 = 0; else n2 *= n2;
+            return 70 * (n0 + n1 + n2);
+        };
+
         animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
