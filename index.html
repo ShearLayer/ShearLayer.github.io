@@ -3,252 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cartoon Display</title>
+    <title>Blocky Flight Simulator</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@latest/build/three.module.js"
+            }
+        }
+    </script>
     <style>
-        body {
-            display: flex;
-            flex-direction: column; /* Stack sidebar/main content and footer vertically */
-            min-height: 100vh; /* Ensures the body takes at least the full viewport height */
-            margin: 0;
-            background: linear-gradient(135deg, #a1c4fd 0%, #f7e4a3 100%); /* Gradient background */
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            display: flex;
-            flex: 1; /* Allows the container to grow and push the footer to the bottom */
-        }
-        .sidebar {
-            width: 200px; /* Fixed width for the sidebar on desktop */
-            background-color: #333; /* Dark background for the sidebar */
-            color: white;
-            padding: 20px;
-            box-sizing: border-box;
-            height: 100vh; /* Full height of the viewport */
-            position: fixed; /* Keeps the sidebar fixed while scrolling */
-        }
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar li {
-            padding: 15px 10px;
-            cursor: pointer;
-            transition: background-color 0.3s; /* Smooth hover effect */
-        }
-        .sidebar li:hover {
-            background-color: #555; /* Lighter shade on hover */
-        }
-        .main-content {
-            margin-left: 220px; /* Offset to account for sidebar width + padding */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1; /* Takes up remaining space */
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        h1 {
-            font-family: Arial, sans-serif;
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.5rem; /* Larger font size for desktop */
-        }
-        .image-section {
-            position: relative; /* Allows positioning of the section overlay */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px; /* Space between the section toggle button and image wrapper */
-        }
-        .image-wrapper {
-            display: flex;
-            align-items: center; /* Vertically center the button and image */
-            gap: 20px; /* Space between the button and image */
-            margin-top: 20px;
-        }
-        .image-container {
-            position: relative; /* Allows positioning of the image overlay */
-            max-width: 80%; /* Matches the image's max-width on desktop */
-        }
-        .image-container img {
-            max-width: 100%; /* Ensures the image doesn't overflow its container */
-            height: auto;
-            border: 2px solid #333;
-            border-radius: 10px;
-            display: block; /* Removes any extra space below the image */
-        }
-        .image-container.overlay::before {
-            content: ''; /* Required for the pseudo-element */
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(50, 50, 50, 0.5); /* Dark grey with 50% opacity */
-            border-radius: 10px; /* Matches the image's border-radius */
-        }
-        .image.ConcurrentOverlay::before {
-            content: ''; /* Required for the pseudo-element */
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(50, 50, 50, 0.5); /* Dark grey with 50% opacity */
-        }
-        .toggle-button, .section-toggle-button {
-            padding: 10px 20px;
-            background-color: #333; /* Matches the sidebar/footer color */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s; /* Smooth hover effect */
-        }
-        .toggle-button:hover, .section-toggle-button:hover {
-            background-color: #555; /* Lighter shade on hover */
-        }
-        .toggle-button:disabled {
-            background-color: #666; /* Greyed out when disabled */
-            cursor: not-allowed; /* Indicates the button is not clickable */
-            opacity: 0.6; /* Visually indicate disabled state */
-        }
-        footer {
-            background-color: #333; /* Matches the sidebar color */
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            width: 100%;
-            position: relative; /* Ensures the footer stays at the bottom */
-        }
-        footer p {
-            margin: 5px 0;
-        }
-        footer a {
-            color: #a1c4fd; /* Matches the gradient's light blue for contrast */
-            text-decoration: none;
-            margin: 0 15px; /* Spacing between links */
-            font-weight: bold;
-        }
-        footer a:hover {
-            text-decoration: underline; /* Underline on hover for better UX */
-        }
-
-        /* Media Query for Mobile Devices (screens smaller than 768px) */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column; /* Stack sidebar and main content vertically */
-            }
-            .sidebar {
-                width: 100%; /* Full width on mobile */
-                height: auto; /* Auto height instead of full viewport */
-                position: static; /* Remove fixed positioning */
-                padding: 10px; /* Reduce padding */
-            }
-            .sidebar li {
-                padding: 10px 5px; /* Reduce padding for list items */
-                font-size: 14px; /* Smaller font size for mobile */
-            }
-            .main-content {
-                margin-left: 0; /* Remove sidebar offset */
-                padding: 10px; /* Reduce padding */
-            }
-            h1 {
-                font-size: 1.5rem; /* Smaller font size for mobile */
-                margin-bottom: 20px;
-            }
-            .image-wrapper {
-                flex-direction: column; /* Stack button and image vertically */
-                gap: 10px; /* Reduce gap */
-                align-items: center;
-            }
-            .image-container {
-                max-width: 100%; /* Allow image to take full width on mobile */
-            }
-            .toggle-button, .section-toggle-button {
-                padding: 8px 16px; /* Slightly smaller button */
-                font-size: 14px; /* Smaller font size */
-            }
-            footer {
-                padding: 8px 0; /* Reduce padding */
-            }
-            footer a {
-                margin: 0 10px; /* Reduce spacing between links */
-                font-size: 14px; /* Smaller font size for mobile */
-            }
-        }
-
-        /* Media Query for Very Small Screens (e.g., phones smaller than 480px) */
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.2rem; /* Even smaller font size for very small screens */
-            }
-            .toggle-button, .section-toggle-button {
-                padding: 6px 12px; /* Even smaller button */
-                font-size: 12px;
-            }
-            footer a {
-                display: inline-block; /* Stack links vertically if needed */
-                margin: 5px 0; /* Adjust spacing for vertical stacking */
-                font-size: 12px;
-            }
-        }
+        body { margin: 0; overflow: hidden; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <ul>
-                <li>File</li>
-                <li>Storage</li>
-                <li>Run</li>
-                <li>Hold</li>
-                <li>Report</li>
-            </ul>
-        </div>
-        <div class="main-content">
-            <h1>OK Boomer</h1>
-            <div class="image-section" id="imageSection">
-                <button class="section-toggle-button" onclick="toggleSectionOverlay()">Toggle Section Overlay</button>
-                <div class="image-wrapper">
-                    <button class="toggle-button" id="imageToggleButton" onclick="toggleOverlay()">Toggle</button>
-                    <div class="image-container overlay" id="imageContainer">
-                        <img src="unnamed.png" alt="Cartoon depicting generational debt">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <footer>
-        <p>Share this page:</p>
-        <a href="https://twitter.com/intent/tweet?url=https://example.com&text=Check%20out%20this%20cartoon%20about%20generational%20debt!" target="_blank">X</a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://example.com" target="_blank">Facebook</a>
-        <a href="https://www.instagram.com/?url=https://example.com" target="_blank">Instagram</a>
-        <a href="https://signal.me/#p/+12025550123?text=Check%20out%20this%20cartoon:%20https://example.com" target="_blank">Signal</a>
-    </footer>
+    <script type="module">
+        import * as THREE from "three";
 
-    <script>
-        function toggleOverlay() {
-            const imageContainer = document.getElementById('imageContainer');
-            imageContainer.classList.toggle('overlay');
+        // Scene, Camera, Renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create Blocky Airplane
+        const plane = new THREE.Group();
+
+        // Main Body
+        const bodyGeo = new THREE.BoxGeometry(2, 1, 4);
+        const bodyMat = new THREE.MeshBasicMaterial({ color: "red", wireframe: false });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        plane.add(body);
+
+        // Wings
+        const wingGeo = new THREE.BoxGeometry(6, 0.2, 1);
+        const wingMat = new THREE.MeshBasicMaterial({ color: "gray" });
+        const wing = new THREE.Mesh(wingGeo, wingMat);
+        wing.position.y = 0.6;
+        plane.add(wing);
+
+        scene.add(plane);
+
+        // Camera Position
+        camera.position.z = 10;
+        camera.position.y = 2;
+        camera.lookAt(plane.position);
+
+        // Controls
+        let roll = 0;  // Rotation around Z-axis
+        let pitch = 0; // Rotation around X-axis
+
+        window.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowUp") pitch -= 0.05; // Nose Down
+            if (event.key === "ArrowDown") pitch += 0.05; // Nose Up
+            if (event.key === "ArrowLeft") roll -= 0.05; // Roll Left
+            if (event.key === "ArrowRight") roll += 0.05; // Roll Right
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Apply rotation
+            plane.rotation.x = pitch;
+            plane.rotation.z = roll;
+
+            // Move forward (simulate flight)
+            plane.position.z -= 0.1;
+
+            renderer.render(scene, camera);
         }
 
-        function toggleSectionOverlay() {
-            const imageSection = document.getElementById('imageSection');
-            const imageToggleButton = document.getElementById('imageToggleButton');
-            imageSection.classList.toggle('section-overlay');
-
-            // Disable/enable the image toggle button based on the section overlay
-            if (imageSection.classList.contains('section-overlay')) {
-                imageToggleButton.disabled = true;
-            } else {
-                imageToggleButton.disabled = false;
-            }
-        }
+        animate();
     </script>
 </body>
 </html>
