@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightning Distance Calculator</title>
+    <title>Dynamic Lightning Distance Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-image: url('https://images.unsplash.com/photo-1501618295575-e947798a6595?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Replace with your image URL */
+            background-image: url('https://images.unsplash.com/photo-1501618295575-e947798a6595?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
             background-size: cover;
             background-position: center;
         }
         .bg-opacity-80 {
-            background-color: rgba(255, 255, 255, 0.8); /* Adjust the opacity as needed */
+            background-color: rgba(255, 255, 255, 0.8);
         }
     </style>
 </head>
 <body class="min-h-screen flex justify-center items-center py-10">
     <div class="bg-opacity-80 rounded-lg shadow-xl p-8 w-full max-w-md transition-transform hover:scale-105">
-        <h1 class="text-2xl font-semibold text-blue-600 text-center mb-6">Lightning Distance Calculator</h1>
+        <h1 class="text-2xl font-semibold text-blue-600 text-center mb-6">Dynamic Lightning Distance Calculator</h1>
 
         <div class="mb-4">
-            <label for="temperature" class="block text-gray-700 text-sm font-bold mb-2">Outside Air Temperature (°F):</label>
-            <input type="number" id="temperature" placeholder="Enter temperature" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <label for="temperatureSlider" class="block text-gray-700 text-sm font-bold mb-2">Outside Air Temperature (°F):</label>
+            <input type="range" id="temperatureSlider" min="-40" max="120" value="70" class="w-full">
+            <p id="temperatureValue" class="text-gray-700 text-center">70 °F</p>
         </div>
 
         <div class="mb-6">
-            <label for="seconds" class="block text-gray-700 text-sm font-bold mb-2">Seconds Between Flash and Thunder:</label>
-            <input type="number" id="seconds" placeholder="Enter seconds" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <label for="secondsInput" class="block text-gray-700 text-sm font-bold mb-2">Seconds Between Flash and Thunder:</label>
+            <input type="number" id="secondsInput" placeholder="Enter seconds" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
-        <button onclick="calculateDistance()" class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out">
+        <button id="calculateButton" class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out">
             Calculate Distance
         </button>
 
@@ -40,26 +41,33 @@
     </div>
 
     <script>
-        function calculateDistance() {
-            let temperature = parseFloat(document.getElementById('temperature').value);
-            let seconds = parseFloat(document.getElementById('seconds').value);
+        const temperatureSlider = document.getElementById('temperatureSlider');
+        const temperatureValueDisplay = document.getElementById('temperatureValue');
+        const secondsInput = document.getElementById('secondsInput');
+        const calculateButton = document.getElementById('calculateButton');
+        const resultDisplay = document.getElementById('result');
 
-            if (isNaN(temperature) || isNaN(seconds)) {
-                document.getElementById('result').textContent = "Please enter valid numbers.";
+        temperatureSlider.addEventListener('input', () => {
+            const temperature = temperatureSlider.value;
+            temperatureValueDisplay.textContent = `${temperature} °F`;
+        });
+
+        calculateButton.addEventListener('click', () => {
+            const temperature = parseFloat(temperatureSlider.value);
+            const seconds = parseFloat(secondsInput.value);
+
+            if (isNaN(seconds)) {
+                resultDisplay.textContent = "Please enter a valid number of seconds.";
                 return;
             }
 
-            // Calculate speed of sound in feet per second
             let speedOfSoundFeetPerSecond = 1087 * Math.sqrt((temperature + 459.67) / 491.67);
-
-            // Calculate distance in feet
             let distanceFeet = speedOfSoundFeetPerSecond * seconds;
-
-            // Convert distance to miles
             let distanceMiles = distanceFeet / 5280;
 
-            document.getElementById('result').textContent = "Distance: " + distanceMiles.toFixed(2) + " miles";
-        }
+            resultDisplay.textContent = "Distance: " + distanceMiles.toFixed(2) + " miles";
+        });
     </script>
 </body>
 </html>
+
