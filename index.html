@@ -3,190 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geography Adventure Quiz!</title>
+    <title>Lightning Distance Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: sans-serif;
-            background-color: #e0f7fa; /* Light Blue Background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1501618295575-e947798a6595?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
         }
-        .quiz-container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 600px;
-        }
-        h1 {
-            color: #2979ff; /* Blue Title */
-        }
-        .question {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .options button {
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #80cbc4; /* Teal Buttons */
-            color: white;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        .options button:hover {
-            background-color: #4db6ac;
-        }
-        .result {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #4caf50; /* Green Result */
-        }
-        #next-button {
-            display: none;
-            padding: 10px 20px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #ffb74d; /* Amber Button */
-            color: white;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        #next-button:hover {
-            background-color: #ffa726;
-        }
-
-        #quiz-image {
-            max-width: 200px;
-            margin-bottom: 10px;
-
+        .bg-opacity-80 {
+            background-color: rgba(255, 255, 255, 0.8); /* Adjust the opacity as needed */
         }
     </style>
 </head>
-<body>
-    <div class="quiz-container">
-        <h1>Geography Adventure!</h1>
-        <div class="question" id="question"></div>
-        <div class="options" id="options"></div>
-        <div class="result" id="result"></div>
-        <button id="next-button" onclick="nextQuestion()">Next Question</button>
-        <img id="quiz-image" src="" alt="Quiz Image" />
+<body class="min-h-screen flex justify-center items-center py-10">
+    <div class="bg-opacity-80 rounded-lg shadow-xl p-8 w-full max-w-md transition-transform hover:scale-105">
+        <h1 class="text-2xl font-semibold text-blue-600 text-center mb-6">Lightning Distance Calculator</h1>
+
+        <div class="mb-4">
+            <label for="temperature" class="block text-gray-700 text-sm font-bold mb-2">Outside Air Temperature (°F):</label>
+            <input type="number" id="temperature" placeholder="Enter temperature" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-6">
+            <label for="seconds" class="block text-gray-700 text-sm font-bold mb-2">Seconds Between Flash and Thunder:</label>
+            <input type="number" id="seconds" placeholder="Enter seconds" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <button onclick="calculateDistance()" class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out">
+            Calculate Distance
+        </button>
+
+        <div id="result" class="mt-6 text-lg text-center font-semibold text-gray-800"></div>
     </div>
 
     <script>
-        const questions = [
-            {
-                question: "Which is the largest ocean in the world?",
-                options: ["Atlantic", "Indian", "Pacific", "Arctic"],
-                answer: "Pacific",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Pacific_Ocean_map.png/600px-Pacific_Ocean_map.png"
-            },
-            {
-                question: "What is the capital of France?",
-                options: ["London", "Berlin", "Paris", "Rome"],
-                answer: "Paris",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Paris_Montage_1.jpg/600px-Paris_Montage_1.jpg"
-            },
-            {
-                question: "Which continent is known as the 'Land Down Under'?",
-                options: ["Africa", "Australia", "Europe", "Asia"],
-                answer: "Australia",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Australia_satellite_orthographic.jpg/600px-Australia_satellite_orthographic.jpg"
-            },
-             {
-                question: "What is the longest river in the world?",
-                options: ["Amazon", "Nile", "Mississippi", "Yangtze"],
-                answer: "Nile",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Nile_River_Map.png/600px-Nile_River_Map.png"
-            },
-            {
-                question: "Which country is famous for the Great Wall?",
-                options: ["India", "Japan", "China", "Egypt"],
-                answer: "China",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2005-0531-china-08pan-great_wall_jinshanling-dr.jpg/600px-2005-0531-china-08pan-great_wall_jinshanling-dr.jpg"
+        function calculateDistance() {
+            let temperature = parseFloat(document.getElementById('temperature').value);
+            let seconds = parseFloat(document.getElementById('seconds').value);
+
+            if (isNaN(temperature) || isNaN(seconds)) {
+                document.getElementById('result').textContent = "Please enter valid numbers.";
+                return;
             }
-        ];
 
-        let currentQuestion = 0;
-        let score = 0;
+            // Calculate speed of sound in feet per second
+            let speedOfSoundFeetPerSecond = 1087 * Math.sqrt((temperature + 459.67) / 491.67);
 
-        function displayQuestion() {
-            const questionElement = document.getElementById("question");
-            const optionsElement = document.getElementById("options");
-            const imageElement = document.getElementById("quiz-image");
-            const nextButton = document.getElementById("next-button");
+            // Calculate distance in feet
+            let distanceFeet = speedOfSoundFeetPerSecond * seconds;
 
-            questionElement.textContent = questions[currentQuestion].question;
-            imageElement.src = questions[currentQuestion].image;
+            // Convert distance to miles
+            let distanceMiles = distanceFeet / 5280;
 
-            optionsElement.innerHTML = "";
-            questions[currentQuestion].options.forEach(option => {
-                const button = document.createElement("button");
-                button.textContent = option;
-                button.onclick = () => checkAnswer(option);
-                optionsElement.appendChild(button);
-            });
-            nextButton.style.display = "none";
+            document.getElementById('result').textContent = "Distance: " + distanceMiles.toFixed(2) + " miles";
         }
-
-        function checkAnswer(selectedOption) {
-            const resultElement = document.getElementById("result");
-            const nextButton = document.getElementById("next-button");
-
-            if (selectedOption === questions[currentQuestion].answer) {
-                resultElement.textContent = "Correct!";
-                resultElement.style.color = "green";
-                score++;
-            } else {
-                resultElement.textContent = "Wrong! The correct answer is " + questions[currentQuestion].answer + ".";
-                resultElement.style.color = "red";
-            }
-            nextButton.style.display = "block";
-            disableButtons();
-        }
-
-        function disableButtons() {
-            const buttons = document.querySelectorAll("#options button");
-            buttons.forEach(button => {
-                button.disabled = true;
-            });
-        }
-
-        function nextQuestion() {
-            currentQuestion++;
-            const resultElement = document.getElementById("result");
-            resultElement.textContent = "";
-
-            if (currentQuestion < questions.length) {
-                displayQuestion();
-            } else {
-                displayResult();
-            }
-        }
-
-        function displayResult() {
-            const questionElement = document.getElementById("question");
-            const optionsElement = document.getElementById("options");
-            const resultElement = document.getElementById("result");
-            const imageElement = document.getElementById("quiz-image");
-            const nextButton = document.getElementById("next-button");
-
-            questionElement.textContent = "Quiz Complete!";
-            optionsElement.innerHTML = "";
-            imageElement.src = "";
-            resultElement.textContent = "You scored " + score + " out of " + questions.length + "!";
-            nextButton.style.display = "none";
-        }
-
-        displayQuestion();
     </script>
 </body>
 </html>
